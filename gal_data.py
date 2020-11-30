@@ -23,7 +23,7 @@ def gal_data(names=None, pgc=None, keep_length=False,
         how = 'inner'
 
     if not data_dir:
-        galbase_dir = '/Users/kessler.363/pythonPrograms'
+        galbase_dir = '../gal_data'
         data_dir = os.path.join(galbase_dir, "gal_data")
 
     # READ IN THE DATA
