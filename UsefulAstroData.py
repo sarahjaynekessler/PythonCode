@@ -4,7 +4,6 @@ from astropy.coordinates import SkyCoord
 import numpy as np
 import astropy.units as u
 from astropy.wcs.utils import skycoord_to_pixel
-from reproject import reproject_interp
 from matplotlib import rc
 from astropy.table import Table,join,Column,vstack
 from photutils import CircularAperture,CircularAnnulus

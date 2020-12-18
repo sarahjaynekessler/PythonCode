@@ -26,7 +26,6 @@ def makeAngularREFFAperture(df,i,radii_list):
     return(angradii)
 
 
-
 def makePhysicalAperture(df,i,radii_list):
     kpcradii = []
     for rad in radii_list:
