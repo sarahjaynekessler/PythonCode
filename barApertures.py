@@ -14,15 +14,15 @@ def makeAngularR25Aperture(df,i,radii_list):
     for rad in radii_list:
         ap = rad*df.iloc[i].R25_DEG
         angradii.append(ap)
-    andradii.append(df.iloc[i].RA2/3600.)
+    #andradii.append(df.iloc[i].RA2/3600.)
     return(angradii)
 
 def makeAngularREFFAperture(df,i,radii_list):
     angradii = []
     for rad in radii_list:
-        ap = rad*df.iloc[i].REFF
+        ap = ((rad*df.iloc[i].REFF_pc)/(df.iloc[i].DIST_MPC*1e6))*u.radian.to(u.deg)
         angradii.append(ap)
-    andradii.append(df.iloc[i].RA2/3600.)
+    #andradii.append(df.iloc[i].RA2/3600.)
     return(angradii)
 
 
@@ -31,7 +31,7 @@ def makePhysicalAperture(df,i,radii_list):
     for rad in radii_list:
         ap = ((rad)/(df.iloc[i].DIST_MPC*1e3))*u.radian.to(u.deg)
         kpcradii.append(ap)
-    kpcradii.append(df.iloc[i].RA2/3600.)
+    #kpcradii.append(df.iloc[i].RA2/3600.)
     return(kpcradii)
 
 def makeBarAperture(df,i,radii_list):
@@ -39,20 +39,20 @@ def makeBarAperture(df,i,radii_list):
     for rad in radii_list:
         ap = ((rad*df.iloc[i].RA2)/3600.)
         barradii.append(ap)
-    barradii.append(df.iloc[i].RA2/3600.)
+    #barradii.append(df.iloc[i].RA2/3600.)
     return(barradii)
 
-def runApertureLoop(path,df,radii_list,bands,suffix,typeofAp,makedf=True,ind=None):
+def runApertureLoop(path,df,radii_list,bands,suffix,typeofAp,inputres,makedf=True,ind=None,savedf=None):
 
     pgcnames = ['PGC'+ str(i) for i in df.PGC.astype('int')]
     if ind==None:
         ind = len(pgcnames)
     else:
         ind=ind
-    ra2s = [float(i) for i in df.RA2_kpc]
+    #ra2s = [float(i) for i in df.RA2_kpc]
     bands = [i.lower() for i in bands]
     radii_str = [str(i).replace('.','p') for i in radii_list]
-    radii_str.append('RA2')
+    #radii_str.append('RA2')
     listnames = []
     for i in bands:
         for j in radii_str:
@@ -69,12 +69,12 @@ def runApertureLoop(path,df,radii_list,bands,suffix,typeofAp,makedf=True,ind=Non
     else:
         radiisuffix = ['_'+i+suffix for i in radii_str] 
 
-    wavesum = {'fuv':1540*1e-4,'nuv':2310*1e-4,'w1':3.4,'w2':4.6,'w3':12}
+    wavesum = {'fuv':1540*1e-4,'nuv':2310*1e-4,'w1':3.4,'w2':4.6,'w3':12,'w4':22}
 
     for i in np.arange(len(pgcnames[:ind])):
         for band in bands:
-            file = glob(path+pgcnames[i]+'_*'+band+'*_*fits')
-            stars = glob(path+pgcnames[i]+'_*'+band+'*_*.fits')
+            file = glob(path+pgcnames[i]+'_*'+band+'*'+inputres+'.fits')
+            stars = glob(path+pgcnames[i]+'_*'+band+'*'+inputres+'_stars.fits')
             if len(file) == 0:
                 for rd in radiisuffix:
                     dictionary[band.upper()+rd].append(np.nan)
@@ -87,12 +87,14 @@ def runApertureLoop(path,df,radii_list,bands,suffix,typeofAp,makedf=True,ind=Non
 
             if (len(pgcnames)-i)%50 == 0:
                 print(len(pgcnames)-i,'Files to go')
-                
     dictionary['PGC'] = pgcnames[:ind]
-    dictionary['RA2_kpc']=ra2s[:ind]
+    #dictionary['RA2_kpc']=ra2s[:ind]
     if makedf==True:
         newdf = makeDataFrame(dictionary,radiisuffix,bands)
-        return(newdf)
+        if savedf!=None:
+            newdf.to_csv(savedf,index=None)
+        else:
+            return(newdf)
     else:
 
         return(dictionary,radiisuffix,bands)
