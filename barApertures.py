@@ -25,6 +25,13 @@ def makeAngularREFFAperture(df,i,radii_list):
     #andradii.append(df.iloc[i].RA2/3600.)
     return(angradii)
 
+def makeAngularReMultiband(df,i,radii_list,band):
+    angradii = []
+    for rad in radii_list:
+        ap = rad*df.iloc[i][str(band)+'re']/3600.
+        angradii.append(ap)
+    return(angradii)
+
 
 def makePhysicalAperture(df,i,radii_list):
     kpcradii = []
@@ -143,7 +150,9 @@ def centerApertures(f,stars,df,i,band,wavlength,radiisuffix,radii_list,dictionar
     if typeofAp=='angularR25':
         radii = makeAngularR25Aperture(df,i,radii_list) 
     elif typeofAp=='angularREFF':
-        radii = makeAngularREFFAperture(df,i,radii_list) 
+        radii = makeAngularREFFAperture(df,i,radii_list)
+    elif typeofAp== 'angularReMultiband':
+        radii = makeAngularReMultiband(df,i,radii_list,band)
     elif typeofAp == 'physical':
         radii = makePhysicalAperture(df,i,radii_list)
     elif typeofAp == 'bar':
